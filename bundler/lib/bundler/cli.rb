@@ -58,8 +58,8 @@ module Bundler
       custom_gemfile = options[:gemfile]
       if custom_gemfile && !custom_gemfile.empty?
         expanded_custom_gemfile = Pathname.new(custom_gemfile).expand_path
-        Bundler::SharedHelpers.set_env "BUNDLE_GEMFILE", expanded_custom_gemfile.to_s
         Bundler.reset_settings_and_root!(expanded_custom_gemfile.parent)
+        Bundler.settings.temporary(:gemfile => expanded_custom_gemfile)
       end
 
       Bundler.settings.set_command_option_if_given :retry, options[:retry]
