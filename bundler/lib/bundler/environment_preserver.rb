@@ -21,6 +21,21 @@ module Bundler
       new(env_to_hash(ENV), BUNDLER_KEYS)
     end
 
+    def self.replace_env_with(new_env)
+      # Fallback logic for Windows below to workaround
+      # https://bugs.ruby-lang.org/issues/16798. Can be dropped once we no
+      # longer support rubies under 3.0.
+      if Gem.win_platform? && RUBY_VERSION < "3.0"
+        ENV.clear
+
+        new_env.each {|k, v| ENV[k] = v }
+
+        return
+      end
+
+      ENV.replace(new_env)
+    end
+
     def self.env_to_hash(env)
       to_hash = env.to_hash
       return to_hash unless Gem.win_platform?
@@ -38,18 +53,7 @@ module Bundler
 
     # Replaces `ENV` with the bundler environment variables backed up
     def replace_with_backup
-      # Fallback logic for Windows below to workaround
-      # https://bugs.ruby-lang.org/issues/16798. Can be dropped once we no
-      # longer support rubies under 3.0.
-      if Gem.win_platform? && RUBY_VERSION < "3.0"
-        ENV.clear
-
-        backup.each {|k, v| ENV[k] = v }
-
-        return
-      end
-
-      ENV.replace(backup)
+      self.class.replace_env_with(backup)
     end
 
     # @return [Hash]

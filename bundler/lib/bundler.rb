@@ -685,10 +685,10 @@ EOF
     # @param env [Hash]
     def with_env(env)
       backup = ENV.to_hash
-      ENV.replace(env)
+      EnvironmentPreserver.replace_env_with(env)
       yield
     ensure
-      ENV.replace(backup)
+      EnvironmentPreserver.replace_env_with(backup)
     end
   end
 end
