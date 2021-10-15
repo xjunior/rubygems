@@ -39,9 +39,9 @@ module Bundler
     # Replaces `ENV` with the bundler environment variables backed up
     def replace_with_backup
       # Fallback logic for Windows below to workaround
-      # https://bugs.ruby-lang.org/issues/16798. Can be dropped once all
-      # supported rubies include the fix for that.
-      if Gem.win_platform?
+      # https://bugs.ruby-lang.org/issues/16798. Can be dropped once we no
+      # longer support rubies under 3.0.
+      if Gem.win_platform? && RUBY_VERSION < "3.0"
         ENV.clear
 
         backup.each {|k, v| ENV[k] = v }
