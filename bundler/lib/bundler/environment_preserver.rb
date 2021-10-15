@@ -38,15 +38,18 @@ module Bundler
 
     # Replaces `ENV` with the bundler environment variables backed up
     def replace_with_backup
-      ENV.replace(backup) unless Gem.win_platform?
-
       # Fallback logic for Windows below to workaround
       # https://bugs.ruby-lang.org/issues/16798. Can be dropped once all
       # supported rubies include the fix for that.
+      if Gem.win_platform?
+        ENV.clear
 
-      ENV.clear
+        backup.each {|k, v| ENV[k] = v }
 
-      backup.each {|k, v| ENV[k] = v }
+        return
+      end
+
+      ENV.replace(backup)
     end
 
     # @return [Hash]
